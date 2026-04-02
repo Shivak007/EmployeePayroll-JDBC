@@ -1,40 +1,22 @@
 package com.bridgelabz.employeepayroll;
+import java.sql.*;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
-
-public class EmployeePayrollService {
-
+public class EmployeePayrollService{
     public static void main(String[] args) {
 
-        String jdbcURL = "jdbc:mysql://localhost:3306/employee_payroll_db";
-        String username = "root";
-        String password = "Shiva@123";
+        String query = "UPDATE employee_payroll SET salary = ? WHERE name = ?";
 
-        try {
+        try (Connection con = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/employee_payroll_db", "root", "Shiva@123");
+             PreparedStatement ps = con.prepareStatement(query)) {
 
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            ps.setDouble(1, 200000);
+            ps.setString(2, "Terisa");
 
-            Connection connection =
-                    DriverManager.getConnection(jdbcURL, username, password);
+            int rows = ps.executeUpdate();
+            System.out.println("Rows Updated: " + rows);
 
-            Statement statement = connection.createStatement();
-
-            ResultSet resultSet =
-                    statement.executeQuery("select * from employee_payroll");
-
-            while(resultSet.next()) {
-
-                int id = resultSet.getInt("id");
-                String name = resultSet.getString("name");
-                double salary = resultSet.getDouble("salary");
-
-                System.out.println(id + " " + name + " " + salary);
-            }
-
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
